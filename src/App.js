@@ -63,7 +63,6 @@ function App() {
         {activeWord}
         <br />
         <br />
-        <div>{keys}</div>
         <br />
         {winner && <button onClick={newGame}>new game</button>}
       </header>
