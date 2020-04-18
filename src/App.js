@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Highlighter from "react-highlight-words";
 import './App.css';
 
 import useEventListener from './useEventListener'
@@ -20,31 +21,46 @@ function App() {
   const activeWordArray = [...new Set(activeWord.toLowerCase())];
 
   useEventListener('keydown', ({ key, keyCode }) => {
-    if (key && keyCode > 64 && keyCode < 90) {
+    if (!winner && key && keyCode > 64 && keyCode < 90) {
       let setOfKeys = new Set(keys);
       setOfKeys.add(key.toLowerCase());
       const depressedKeys = [...setOfKeys];
 
       if (depressedKeys.length === activeWordArray.length) {
-        setWordIndex(wordIndex + 1);
-        setKeys([])
+        const nextWordIndex = wordIndex + 1;
+        if (nextWordIndex === game.split(' ').length) {
+          setWinner(true);
+        } else {
+          setWordIndex(nextWordIndex);
+          setKeys([])
+        }
       } else {
         setKeys(depressedKeys);
       }
     }
   });
   useEventListener('keyup', ({ key }) => {
-    let setOfKeys = new Set(keys);
-    setOfKeys.delete(key);
+    if (!winner) {
+      let setOfKeys = new Set(keys);
+      setOfKeys.delete(key);
 
-    setKeys([...setOfKeys]);
+      setKeys([...setOfKeys]);
+    }
   });
 
   return (
     <div className="App">
       <header className="App-header">
         {winner && <div>you win!</div>}
-        {!winner && <div>{game}</div>}
+        {!winner && game && activeWord && <div>
+          <Highlighter
+            highlightClassName="YourHighlightClass"
+            searchWords={[activeWord]}
+            autoEscape={true}
+            textToHighlight={game}
+          />
+        </div>}
+        {activeWord}
         <br />
         <br />
         <div>{keys}</div>
